@@ -1,10 +1,13 @@
-{% extends "base.html" %} {% block title %}Changed{% endblock %}
+{% extends "base.html" %}
 
+{% block title %}Home{% endblock %}
+
+{% block instructions%}Drag an image to the expression list to upload it.{% endblock %}
+ 
 {% block content %}
   <div id="calculator" style="width: 1050px; height: 600px; margin-bottom: 1em;"></div>
-  Drag an image to the expression list to upload it.
-
-  <script >
+  
+  <script>
     var elt = document.getElementById('calculator');
     var calculator = Desmos.GraphingCalculator(elt, {
       imageUploadCallback: function (file, cb) {
@@ -16,7 +19,11 @@
         // Alternatively, Desmos provides a default implementation that
         // reads the image data, handles EXIF orientation data, and
         // re-compresses large images:
+        console.log(file);
+        console.log(cb);
         Desmos.imageFileToDataURL(file, function (err, dataURL) {
+          // console.log(dataURL);
+          localStorage.setItem("img", dataURL);
           // Could send data to a server for storage and pass a remote
           // URL to cb, but for this example, just pass data through.
           //
@@ -36,5 +43,15 @@
         });
       }
     });
+    var hello = localStorage.getItem("img");
+    console.log('heladflo')
+    Desmos.imageFileToDataURL(null, function (err, hello) {
+          console.log('hello');
+          if (err) {
+            cb(err);
+          } else {
+            cb(null, hello);
+          }
+        })
   </script>
 {% endblock %}
