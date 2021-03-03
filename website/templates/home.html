@@ -7,34 +7,19 @@
 {% block content %}
   <div id="calculator" style="width: 1050px; height: 600px; margin-bottom: 1em;"></div>
   
+  <form method="POST">
+    <input type="hidden" id="imgURL" name="imgURL" value="">
+    <input type="hidden" id="calcState" name="calcState" value="">
+    <input type="submit" value="Store image data">
+  </form>
+
+  
   <script>
     var elt = document.getElementById('calculator');
     var calculator = Desmos.GraphingCalculator(elt, {
       imageUploadCallback: function (file, cb) {
-        // At this point, you could use the FileReader API to read the
-        // image file:
-        //
-        // https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-        //
-        // Alternatively, Desmos provides a default implementation that
-        // reads the image data, handles EXIF orientation data, and
-        // re-compresses large images:
-        console.log(file);
-        console.log(cb);
         Desmos.imageFileToDataURL(file, function (err, dataURL) {
-          // console.log(dataURL);
-          localStorage.setItem("img", dataURL);
-          // Could send data to a server for storage and pass a remote
-          // URL to cb, but for this example, just pass data through.
-          //
-          // If you use a remote URL, it's important to make sure that
-          // the image is either hosted on the same domain as the page
-          // the calculator is displayed on, or alternatively that the
-          // image is served with the appropriate CORS
-          // Access-Control-Allow-Origin header.
-          //
-          // More information:
-          // https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
+          storeImageData(file);
           if (err) {
             cb(err);
           } else {
@@ -43,15 +28,13 @@
         });
       }
     });
-    var hello = localStorage.getItem("img");
-    console.log('heladflo')
-    Desmos.imageFileToDataURL(null, function (err, hello) {
-          console.log('hello');
-          if (err) {
-            cb(err);
-          } else {
-            cb(null, hello);
-          }
-        })
+    
+    function storeImageData(dataURL) {
+      localStorage.setItem("imgURL", dataURL);
+      localStorage.setItem("calcState", calculator.getState());
+      document.getElementById("imgURL").value = dataURL;
+      document.getElementById("calcState").value = calculator.getState();
+    }
+    
   </script>
 {% endblock %}
