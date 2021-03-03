@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
+from .models import Image
 
 views = Blueprint('views',__name__)
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        session['imgURL'] = request.form.get('imgURL')
+        new_image = Image(img=request.form.get('imgURL'))
         session['calcState'] = request.form.get('calcState')
         print(session.get('imgURL'))
         return redirect(url_for('views.edit'))
