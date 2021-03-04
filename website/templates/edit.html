@@ -2,7 +2,7 @@
 
 {% block title %}Home{% endblock %}
 
-{% block instructions%}Drag an image to the expression list to upload it.{% endblock %}
+{% block instructions%}Edit calculated curves{% endblock %}
  
 {% block content %}
   <div id="calculator" style="width: 1050px; height: 600px; margin-bottom: 1em;"></div>
@@ -15,7 +15,7 @@
   </form>
 
   
-  <!-- <script>
+  <script>
     var elt = document.getElementById('calculator');
     var calculator = Desmos.GraphingCalculator(elt, {
       imageUploadCallback: function (file, cb) {
@@ -38,5 +38,5 @@
       document.getElementById("calcState").value = calculator.getState();
     }
     
-  </script> -->
+  </script>
 {% endblock %}
