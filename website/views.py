@@ -9,7 +9,8 @@ import numpy as np
 import cv2
 from skimage.morphology import skeletonize, thin
 from skimage.util import invert
-from .curveCalc import getJunctions, getEdgeEndPoints, getAdjacencyMatrix
+from .curveCalc import getJunctions, getEdgeEndPoints, getAdjacencyMatrix, getCurveData2
+from .hea import HEA
 
 views = Blueprint('views',__name__)
 
@@ -47,8 +48,17 @@ def edit():
     junctions = list()
     junctions = getJunctions(img)
     endPoints = getEdgeEndPoints(junctions,img)
-    matrix = getAdjacencyMatrix(originalImage, junctions,endPoints,img)
-    print('done')
-    cv2.imshow('img2', originalImage)
-    cv2.waitKey(0)
+    matrix = getAdjacencyMatrix(junctions,endPoints,img)
+
+    for rowCount,nodes in enumerate(matrix):
+        for columnCount,node in enumerate(nodes):
+            if node != 0 and columnCount >= rowCount:
+                path = node
+                curveData = getCurveData2(path)
+                if rowCount == 0 and columnCount == 1:
+                    results = HEA(curveData)
+                    
+
+    
+
     return render_template('edit.html')

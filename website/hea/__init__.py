@@ -128,7 +128,7 @@ def HEA(curveData):
     maxHeightYIncrease = curveData[3]
 
     t = 0
-    T = 50
+    T = 25
     w = 0.9
     c1 = c2 = 1.5 
     r = random.uniform(0.9,1.0)
@@ -138,7 +138,7 @@ def HEA(curveData):
     pC = 0.25
     sigma = 0.1*(math.sqrt(maxHeightXIncrease**2 + maxHeightYIncrease**2))
 
-    z = numpy.linspace(0,1,num=len(dataX))
+    z = np.linspace(0,1,num=len(dataX))
 
     popX = initiatePopulation(curveData) # this will generate a list, each element is a [cp1,cp2,cp3,cp4]
     
@@ -205,14 +205,14 @@ def HEA(curveData):
             xA = popX[indexA]
             xB = popX[indexB]
 
-            print('xA and xB:\n')
+            # print('xA and xB:\n')
             
-            x1,y1 = pointGenerator(z, xA[0], xA[1], xA[2], xA[3])
-            x2,y2 = pointGenerator(z, xB[0], xB[1], xB[2], xB[3])
-            plt.scatter(dataX, dataY,color="b")
-            plt.scatter(x1, y1,color="r")
-            plt.scatter(x2, y2,color="g")
-            plt.show()
+            # x1,y1 = pointGenerator(z, xA[0], xA[1], xA[2], xA[3])
+            # x2,y2 = pointGenerator(z, xB[0], xB[1], xB[2], xB[3])
+            # plt.scatter(dataX, dataY,color="b")
+            # plt.scatter(x1, y1,color="r")
+            # plt.scatter(x2, y2,color="g")
+            # plt.show()
 
             r = random.uniform(0,1.0)
             
@@ -226,14 +226,14 @@ def HEA(curveData):
             
             elif r <= (pR + pC):
                 childA,childB = crossOver(xA,xB)
-                print('childA and childB\n ')
+                # print('childA and childB\n ')
                 
-                x1,y1 = pointGenerator(z, childA[0], childA[1], childA[2], childA[3])
-                x2,y2 = pointGenerator(z, childB[0], childB[1], childB[2], childB[3])
-                plt.scatter(dataX, dataY,color="b")
-                plt.scatter(x1, y1,color="r")
-                plt.scatter(x2, y2,color="g")
-                plt.show()
+                # x1,y1 = pointGenerator(z, childA[0], childA[1], childA[2], childA[3])
+                # x2,y2 = pointGenerator(z, childB[0], childB[1], childB[2], childB[3])
+                # plt.scatter(dataX, dataY,color="b")
+                # plt.scatter(x1, y1,color="r")
+                # plt.scatter(x2, y2,color="g")
+                # plt.show()
                 
                 newPopX.append(childA)
                 newPopX.append(childB)
@@ -246,14 +246,14 @@ def HEA(curveData):
                 mutatedA = mutate(xA,sigma)
                 mutatedB = mutate(xB,sigma)
 
-                print('mutated A and B: \n')
+                # print('mutated A and B: \n')
                 
-                x1,y1 = pointGenerator(z, mutatedA[0], mutatedA[1], mutatedA[2], mutatedA[3])
-                x2,y2 = pointGenerator(z, mutatedB[0], mutatedB[1], mutatedB[2], mutatedB[3])
-                plt.scatter(dataX, dataY,color="b")
-                plt.scatter(x1, y1,color="r")
-                plt.scatter(x2, y2,color="g")
-                plt.show()
+                # x1,y1 = pointGenerator(z, mutatedA[0], mutatedA[1], mutatedA[2], mutatedA[3])
+                # x2,y2 = pointGenerator(z, mutatedB[0], mutatedB[1], mutatedB[2], mutatedB[3])
+                # plt.scatter(dataX, dataY,color="b")
+                # plt.scatter(x1, y1,color="r")
+                # plt.scatter(x2, y2,color="g")
+                # plt.show()
 
                 newPopX.append(mutatedA)
                 newPopX.append(mutatedB)
@@ -275,21 +275,21 @@ def HEA(curveData):
 
         newPND = popX[popFitness.index(max(popFitness))] 
         
-        if fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) > 0 and fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) < 0.000001 and fitness(newPND,dataX,dataY) > 0.001:
+        if fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) > 0 and fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) < 0.000001 and fitness(newPND,dataX,dataY) > 0.0015:
             print('converging, hence early termination')
-            x,y = pointGenerator(z, newPND[0], pND[1], pND[2], pND[3])
-            plt.scatter(dataX, dataY,marker="s")
-            plt.scatter(x, y,marker="o")
-            plt.show()
+            # x,y = pointGenerator(z, newPND[0], pND[1], pND[2], pND[3])
+            # plt.scatter(dataX, dataY,marker="s")
+            # plt.scatter(x, y,marker="o")
+            # plt.show()
             return newPND
         else:
             pND = popX[popFitness.index(max(popFitness))] 
             bestfit = max(popFitness)
             print('the best: ', bestfit)
-            x,y = pointGenerator(z, pND[0], pND[1], pND[2], pND[3])
-            plt.scatter(dataX, dataY,marker="s")
-            plt.scatter(x, y,marker="o")
-            plt.show()
+            # x,y = pointGenerator(z, pND[0], pND[1], pND[2], pND[3])
+            # plt.scatter(dataX, dataY,marker="s")
+            # plt.scatter(x, y,marker="o")
+            # plt.show()
 
 
         t += 1

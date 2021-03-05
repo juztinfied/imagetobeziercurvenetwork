@@ -66,7 +66,7 @@ def findEightPath(endPoints, x,y,path,neighbourMatrix):
 
     return path 
 
-def getAdjacencyMatrix(originalImage, junctions,endPoints,neighbourMatrix):
+def getAdjacencyMatrix(junctions,endPoints,neighbourMatrix):
     matrix = [ [0] * len(junctions) for _ in range(len(junctions))]
     for endX,endY,junctionIndex in endPoints:
         path = findEightPath(endPoints, endX,endY,[(endX,endY)],neighbourMatrix)
@@ -74,14 +74,7 @@ def getAdjacencyMatrix(originalImage, junctions,endPoints,neighbourMatrix):
         startJunctionIndex = -1
         end = path[-1]
         endJunctionIndex = -1
-        cv2.circle(originalImage,start, 5, (30,200,30), -1) 
-        cv2.circle(originalImage,end, 5, (30,200,30), -1) 
-        for coord in path:
-            cv2.circle(originalImage, coord, 5, (255, 0,0),-1)
-        cv2.imshow('img', originalImage)
-        cv2.waitKey(0)
-        # print(path)
-        # print('\n')
+
         for x, y, index in endPoints:
             if (x,y) == start:
                 startJunctionIndex = index 
@@ -118,12 +111,6 @@ def getCurveData2(path):
             maxHeightY = y
     
     # find the point on the line that is closest to the point of the path
-    
-    # checking if base line equation is correct
-    fig = plt.figure() 
-    plt.scatter(dataX, dataY)
-    plt.scatter(dataX, np.asarray(dataX)*baseLineM + baseLineC)
-    plt.show()
     
     # find vector of projection line
     projX = maxHeightX - startX 
@@ -210,7 +197,6 @@ def approxCPS(curveData):
 
 
 def errorFunction(cp1,cp2,cp3,cp4,dataX,dataY):
-    # print(cp1, cp2, cp3, cp4)
     if (len(dataX) != len(dataY)):
         print('dataX and dataY not same length')
         return 
@@ -226,35 +212,5 @@ def errorFunction(cp1,cp2,cp3,cp4,dataX,dataY):
         yError = ((y(t)[k] - dataY[k])**2) 
         totalError += math.sqrt(xError + yError)
     
-    # print(totalError)
     return totalError
 
-
-def errorFunction2(cp1,cp2,cp3,cp4,dataX,dataY):
-    # print(cp1, cp2, cp3, cp4)
-    if (len(dataX) != len(dataY)):
-        print('dataX and dataY not same length')
-        return 
-    
-    t = np.linspace(0,1,num=len(dataX))
-    x = lambda t: ((1-t)**3)*cp1[0] + 3*t*((1-t)**2)*cp2[0] + 3*(t**2)*(1-t)*cp3[0] + (t**3)*cp4[0]
-    y = lambda t: ((1-t)**3)*cp1[1] + 3*t*((1-t)**2)*cp2[1] + 3*(t**2)*(1-t)*cp3[1] + (t**3)*cp4[1]
-
-    totalError = 0
-    print('hi')
-
-    for k1,dataPointX in enumerate(dataX):
-        minDiff = None 
-        bestK = None
-        for k2,xPoint in enumerate(x(t)):
-            if minDiff == None:
-                minDiff = abs(dataPointX - xPoint)
-                bestK = k2
-            elif abs(dataPointX - xPoint) < minDiff:
-                minDiff = abs(dataPointX - xPoint)
-                bestK = k2
- 
-        totalError += abs(y(t)[bestK] - dataY[k1])
-    
-    print(totalError)
-    return totalError

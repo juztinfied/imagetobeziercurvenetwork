@@ -14,6 +14,81 @@
     <input type="submit" value="Store image data">
   </form>
 
+  <script>
+    var elt = document.getElementById('calculator');
+    var calculator = Desmos.GraphingCalculator(elt);
+    calculator.setExpression({
+      latex: '(x_0,y_0)'
+    });
+    calculator.setExpression({
+      latex: '(x_1,y_1)'
+    });
+    calculator.setExpression({
+      latex: '(x_2,y_2)'
+    });
+    calculator.setExpression({
+      latex: '(x_3,y_3)'
+    });
+
+    // var random = calculator.HelperExpression({latex: '(x_0,y_0)'});
+
+    // random.observe('numericValue', function() {
+    //   console.log(random.numericValue);
+    // })
+
+    calculator.setExpression({
+      latex: 'x_0=10'
+    });
+    calculator.setExpression({
+      latex: 'x_1=33'
+    });
+    calculator.setExpression({
+      latex: 'x_2=5'
+    });
+    calculator.setExpression({
+      latex: 'x_3=7'
+    });
+
+    calculator.setExpression({
+      latex: 'y_0=10'
+    });
+    calculator.setExpression({
+      latex: 'y_1=33'
+    });
+    calculator.setExpression({
+      latex: 'y_2=5'
+    });
+    calculator.setExpression({
+      latex: 'y_3=7'
+    });
+
+    calculator.setExpression({
+      latex: '((1-t)((1-t)((1-t)x_0+tx_1)+t((1-t)x_1+tx_2))+t((1-t)((1-t)x_1+tx_2)+t((1-t)x_2+tx_3)),(1-t)((1-t)((1-t)y_0+ty_1)+t((1-t)y_1+ty_2))+t((1-t)((1-t)y_1+ty_2)+t((1-t)y_2+ty_3)))',
+      parametricDomain: {min: '0', max: '1'}
+    });
+
+    calculator.setExpression({
+      latex: '((1-t)x_0 + tx_1,(1-t)y_0 + ty_1)',
+      parametricDomain: {min: '0', max: '1'}
+    });
+
+    calculator.setExpression({
+      latex: '((1-t)x_1 + tx_2,(1-t)y_1 + ty_2)',
+      parametricDomain: {min: '0', max: '1'}
+    });
+
+    calculator.setExpression({
+      latex: '((1-t)x_2 + tx_3,(1-t)y_2 + ty_3)',
+      parametricDomain: {min: '0', max: '1'}
+    });
+    
+
+
+
+    
+    
+  </script>
+
   
   <!-- <script>
     var elt = document.getElementById('calculator');
