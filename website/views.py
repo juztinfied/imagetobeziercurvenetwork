@@ -50,15 +50,25 @@ def edit():
     endPoints = getEdgeEndPoints(junctions,img)
     matrix = getAdjacencyMatrix(junctions,endPoints,img)
 
+    controlPoints = list()
+
     for rowCount,nodes in enumerate(matrix):
         for columnCount,node in enumerate(nodes):
             if node != 0 and columnCount >= rowCount:
                 path = node
+                print(path)
                 curveData = getCurveData2(path)
-                if rowCount == 0 and columnCount == 1:
-                    results = HEA(curveData)
+                # if rowCount == 0 and columnCount == 1:
+                #     results = HEA(curveData)
+                # controlPoints.append(results)
                     
+    a = np.array([[1,2],[3,4],[5,6],[7,8]]) 
+    b = np.array([[9,10],[11,12],[13,14],[15,16]])
+    a2 = a.flatten().tolist() 
+    b2 = b.flatten().tolist()
+    controlPoints += a2
+    controlPoints += b2
+    controlPoints += a2
+    controlPoints += b2
 
-    
-
-    return render_template('edit.html')
+    return render_template('edit.html', controlPoints=controlPoints)
