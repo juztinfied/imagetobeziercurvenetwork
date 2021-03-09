@@ -1,12 +1,13 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block title %}Home{% endblock %}
 
-{% block instructions%}Edit calculated curves{% endblock %}
- 
-{% block content %}
-  <div id="calculator" style="width: 1050px; height: 600px; margin-bottom: 1em;"></div>
-  <div id="delete-button" class="disabled">delete</div>
+  <script src="https://www.desmos.com/api/v1.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+
 
   <style>
     #delete-button {
@@ -22,8 +23,21 @@
       color: #999;
     }
   </style>
+</head>
+<body>
+  <div id="calculator" style="width: 700px; height: 400px;"></div>
+  <div id="delete-button" class="disabled">delete</div>
+  <p>When a curve is selected, use the "delete" button to delete it.</p>
 
-  <script>
+  <script >
+    var elt = document.getElementById('calculator');
+    var calculator = Desmos.GraphingCalculator(elt);
+    calculator.setExpressions([
+      {latex:'y=x^2'},
+      {latex: 'x^2+y^2=1'},
+      {latex: 'y=\\sin(x)'}
+    ]);
+
     let controlPoints = '{{controlPoints}}';
     controlPoints = controlPoints.slice(1,-1).split(',');
     let expression_states = [];
@@ -84,12 +98,12 @@
     function convert2ElementArray(cpArray) {
       let tempCounter = "{" + counter + "}"
       var x = {
-        latex: 'x_' + tempCounter + `=${cpArray[0]}`,
+        latex: 'x_' + tempCounter + `=${counter}`,
         color: Desmos.Colors.BLUE
       }
 
       var y = {
-        latex: 'y_' + tempCounter + `=${cpArray[1]}`,
+        latex: 'y_' + tempCounter + `=${counter}`,
         color: Desmos.Colors.BLUE
       }
 
@@ -113,14 +127,32 @@
 
     var elt = document.getElementById('calculator');
     
-    var calculator = Desmos.GraphingCalculator(elt, {
-      expressions: true
-    });
+    // var calculator = Desmos.GraphingCalculator(elt, {
+    //   expressions: false
+    // });
+
 
     expression_states.forEach(function(expression_state) {
       calculator.setExpression(expression_state);
     });
-    
-  </script>
 
-{% endblock %}
+    var deleteButton = document.getElementById('delete-button');
+
+    deleteButton.addEventListener('mousedown', function (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    })
+
+    deleteButton.addEventListener('click', function (evt) {
+      if (!calculator.isAnyExpressionSelected) return;
+      calculator.removeSelected();
+    });
+
+    calculator.observe('isAnyExpressionSelected', function () {
+      deleteButton.className = calculator.isAnyExpressionSelected ? '' : 'disabled';
+      console.log('hello')
+    });
+  </script>
+  
+</body>
+</html>

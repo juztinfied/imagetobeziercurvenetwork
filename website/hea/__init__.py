@@ -146,7 +146,7 @@ def HEA(curveData):
     popFitness = [fitness(xID,dataX,dataY) for xID in popX]
     pID = popX # list of the personal best position for each member of the population
     pND = popX[popFitness.index(max(popFitness))] # this should be a [cp1,cp2,cp3,cp4] which has the best fitness on record
-
+    bestInHistory = pND
     # print('best position ', pND)
     # cp1 = pND[0]
     # cp2 = pND[1]
@@ -275,7 +275,7 @@ def HEA(curveData):
 
         newPND = popX[popFitness.index(max(popFitness))] 
         
-        if fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) > 0 and fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) < 0.000001 and fitness(newPND,dataX,dataY) > 0.0015:
+        if fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) > 0 and fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) < 0.000001 and fitness(newPND,dataX,dataY) > 0.0015 and fitness(newPND, dataX, dataY) > fitness(bestInHistory, dataX, dataY):
             print('converging, hence early termination')
             # x,y = pointGenerator(z, newPND[0], pND[1], pND[2], pND[3])
             # plt.scatter(dataX, dataY,marker="s")
@@ -286,6 +286,9 @@ def HEA(curveData):
             pND = popX[popFitness.index(max(popFitness))] 
             bestfit = max(popFitness)
             print('the best: ', bestfit)
+            if fitness(pND,dataX,dataY) > fitness(bestInHistory,dataX,dataY):
+                print('new historical record: ', pND)
+                bestInHistory = pND
             # x,y = pointGenerator(z, pND[0], pND[1], pND[2], pND[3])
             # plt.scatter(dataX, dataY,marker="s")
             # plt.scatter(x, y,marker="o")
@@ -294,4 +297,4 @@ def HEA(curveData):
 
         t += 1
     
-    return pND
+    return bestInHistory

@@ -9,7 +9,7 @@ import numpy as np
 import cv2
 from skimage.morphology import skeletonize, thin
 from skimage.util import invert
-from .curveCalc import getJunctions, getEdgeEndPoints, getAdjacencyMatrix, getCurveData2
+from .curveCalc import getJunctions, getEdgeEndPoints, getAdjacencyMatrix, getCurveData2, image_resize
 from .hea import HEA
 
 views = Blueprint('views',__name__)
@@ -25,9 +25,18 @@ def home():
     else:
         return render_template('home.html')
 
+@views.route('/sample')
+def sample():
+    return render_template('sample.html')
+
 @views.route('/edit')
 def edit():
     originalImage = cv2.imread('img.jpg')
+    originalImage = image_resize(originalImage, height = 200)
+    height, width = originalImage.shape[:2]
+    heightOffset = height/2 
+    widthOffset = width/2 
+    
     gray = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
     gray = cv2.bitwise_not(gray)
     (thresh, blackAndWhiteImage) = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
@@ -56,19 +65,11 @@ def edit():
         for columnCount,node in enumerate(nodes):
             if node != 0 and columnCount >= rowCount:
                 path = node
-                print(path)
+                # print(path)
                 curveData = getCurveData2(path)
-                # if rowCount == 0 and columnCount == 1:
-                #     results = HEA(curveData)
-                # controlPoints.append(results)
-                    
-    a = np.array([[1,2],[3,4],[5,6],[7,8]]) 
-    b = np.array([[9,10],[11,12],[13,14],[15,16]])
-    a2 = a.flatten().tolist() 
-    b2 = b.flatten().tolist()
-    controlPoints += a2
-    controlPoints += b2
-    controlPoints += a2
-    controlPoints += b2
+                if rowCount == 0 and columnCount == 1:
+                    results = HEA(curveData)
+                    results = results.flatten().tolist()
+                    controlPoints += results
 
     return render_template('edit.html', controlPoints=controlPoints)
