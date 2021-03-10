@@ -32,7 +32,7 @@ def sample():
 @views.route('/edit')
 def edit():
     originalImage = cv2.imread('img.jpg')
-    originalImage = image_resize(originalImage, height = 400)
+    originalImage = image_resize(originalImage, height = 600)
     height, width = originalImage.shape[:2]
     heightOffset = height/2 
     widthOffset = width/2 
@@ -92,16 +92,7 @@ def edit():
                 curveData = getCurveData2(path)
                 if len(curveData[0]) < 30:
                     continue
-                elif len(curveData[0]) == 87:
-                    i = 0
-                    while i < 87:
-                        coord = (curveData[0][i], curveData[1][i])
-
-                        cv2.circle(originalImage, coord, 2, (255,0,0),-1)
-                        i += 1
-                
-                    cv2.imshow('img', originalImage)
-                    cv2.waitKey(0)
+                else:
                     results = HEA(curveData)
                     results = results.flatten().tolist()
                     controlPoints += results

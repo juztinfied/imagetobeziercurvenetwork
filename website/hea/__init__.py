@@ -78,15 +78,19 @@ def initiatePopulation(curveData):
     terminatingX = dataX[-1]
     terminatingY = dataY[-1]
 
-    frontTangentDX = initialX - dataX[5]
-    frontTangentDY = initialY - dataY[5]
-    backTangentDX = terminatingX - dataX[-5]
-    backTangentDY = terminatingY - dataY[-5]
+    if dataX[5]-initialX == 0:
+        plt.scatter(dataX, dataY,marker="s")
+        plt.show()
 
-    frontM = (dataY[5]-initialY)/(dataX[5]-initialX)
+    frontTangentDX = initialX - dataX[10]
+    frontTangentDY = initialY - dataY[10]
+    backTangentDX = terminatingX - dataX[-10]
+    backTangentDY = terminatingY - dataY[-10]
+
+    frontM = (dataY[10]-initialY)/(dataX[10]-initialX)
     frontC = initialY - frontM*initialX 
 
-    backM = (dataY[-5]-terminatingY)/(dataX[-5]-terminatingX)
+    backM = (dataY[-10]-terminatingY)/(dataX[-10]-terminatingX)
     backC = terminatingY - backM*terminatingX
 
     ratios = [0.75, 1, 1.33, 1.6]
@@ -104,15 +108,11 @@ def initiatePopulation(curveData):
                 lineC = initialY+initialRatio*maxHeightYIncrease
                 A = np.array([[-frontM,1],[0,1]])
                 B = np.array([frontC,lineC])
-                print(A)
-                print(B)
                 cp2 = np.linalg.solve(A,B).tolist()
 
                 lineC = terminatingY+terminatingRatio*maxHeightYIncrease
                 A = np.array([[-backM,1],[0,1]])
                 B = np.array([backC,lineC])
-                print(A)
-                print(B)
                 cp3 = np.linalg.solve(A,B).tolist()
 
                 cp1 = [dataX[0], dataY[0]]
@@ -151,8 +151,7 @@ def initiatePopulation(curveData):
 
                 A = np.array([[-backM,1],[-lineM,1]])
                 B = np.array([backC,lineC])
-                print(A)
-                print(B)
+   
                 if backM == lineM and backC == lineC:
                     cp3 = cp4 
                 else:
@@ -175,8 +174,8 @@ def HEA(curveData):
     maxHeightXIncrease = curveData[2]
     maxHeightYIncrease = curveData[3]
 
-    plt.scatter(dataX, dataY,marker="s")
-    plt.show()
+    # plt.scatter(dataX, dataY,marker="s")
+    # plt.show()
 
     t = 0
     T = 10
@@ -336,7 +335,7 @@ def HEA(curveData):
         else:
             pND = popX[popFitness.index(max(popFitness))] 
             bestfit = max(popFitness)
-            print('the best: ', bestfit)
+            # print('the best: ', bestfit)
             if fitness(pND,dataX,dataY) > fitness(bestInHistory,dataX,dataY):
                 # print('new historical record: ', pND)
                 bestInHistory = pND
@@ -347,8 +346,9 @@ def HEA(curveData):
 
 
         t += 1
-    x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
-    plt.scatter(dataX, dataY,marker="s")
-    plt.scatter(x, y,marker="o")
-    plt.show()
+    # x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
+    # plt.scatter(dataX, dataY,marker="s")
+    # plt.scatter(x, y,marker="o")
+    # plt.show()
+    print('the best in history for this curve: ', fitness(bestInHistory,dataX,dataY))
     return bestInHistory
