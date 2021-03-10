@@ -121,6 +121,9 @@ def initiatePopulation(curveData):
                 initialPop.append(np.array([cp1,cp2,cp3,cp4]))
 
             elif maxHeightYIncrease == 0: # means base line is a straight up vertical line
+                cp1 = [dataX[0], dataY[0]]
+                cp4 = [dataX[-1], dataY[-1]]
+
                 lineX = initialX+initialRatio*maxHeightXIncrease 
                 newX = frontM*lineX + frontC 
                 cp2 = [newX, initialY]
@@ -129,25 +132,31 @@ def initiatePopulation(curveData):
                 newX = backM*lineX + backC 
                 cp3 = [newX, terminatingY]
 
-                cp1 = [dataX[0], dataY[0]]
-                cp4 = [dataX[-1], dataY[-1]]
+                
 
                 initialPop.append(np.array([cp1,cp2,cp3,cp4]))
             
             else: 
+                cp1 = [dataX[0], dataY[0]]
+                cp4 = [dataX[-1], dataY[-1]]
                 lineM = ( (initialY+initialRatio*maxHeightYIncrease) - (terminatingY+terminatingRatio*maxHeightYIncrease) )/( (initialX+initialRatio*maxHeightXIncrease) - (terminatingX+terminatingRatio*maxHeightXIncrease) )
                 lineC = (terminatingY+terminatingRatio*maxHeightYIncrease) - lineM*(terminatingX+terminatingRatio*maxHeightXIncrease)
 
                 A = np.array([[-frontM,1],[-lineM,1]])
                 B = np.array([frontC,lineC])
-                cp2 = np.linalg.solve(A,B).tolist()
+                if frontM == lineM and frontC == lineC:
+                    cp2 = cp1 
+                else:
+                    cp2 = np.linalg.solve(A,B).tolist()
 
                 A = np.array([[-backM,1],[-lineM,1]])
                 B = np.array([backC,lineC])
-                cp3 = np.linalg.solve(A,B).tolist()
-
-                cp1 = [dataX[0], dataY[0]]
-                cp4 = [dataX[-1], dataY[-1]]
+                print(A)
+                print(B)
+                if backM == lineM and backC == lineC:
+                    cp3 = cp4 
+                else:
+                    cp3 = np.linalg.solve(A,B).tolist()
 
                 initialPop.append(np.array([cp1,cp2,cp3,cp4]))
 
@@ -165,6 +174,9 @@ def HEA(curveData):
     dataY = curveData[1]
     maxHeightXIncrease = curveData[2]
     maxHeightYIncrease = curveData[3]
+
+    plt.scatter(dataX, dataY,marker="s")
+    plt.show()
 
     t = 0
     T = 10
@@ -335,8 +347,8 @@ def HEA(curveData):
 
 
         t += 1
-    # x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
-    # plt.scatter(dataX, dataY,marker="s")
-    # plt.scatter(x, y,marker="o")
-    # plt.show()
+    x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
+    plt.scatter(dataX, dataY,marker="s")
+    plt.scatter(x, y,marker="o")
+    plt.show()
     return bestInHistory

@@ -92,12 +92,18 @@ def edit():
                 curveData = getCurveData2(path)
                 if len(curveData[0]) < 30:
                     continue
-                # if len(curveData[0]) == 1:
-                    # cv2.circle(originalImage, (curveData[0][0], curveData[1][0]), 4, (255,0,0),-1)
-                    # cv2.imshow('img', originalImage)
-                    # cv2.waitKey(0)
-                results = HEA(curveData)
-                results = results.flatten().tolist()
-                controlPoints += results
+                elif len(curveData[0]) == 87:
+                    i = 0
+                    while i < 87:
+                        coord = (curveData[0][i], curveData[1][i])
+
+                        cv2.circle(originalImage, coord, 2, (255,0,0),-1)
+                        i += 1
+                
+                    cv2.imshow('img', originalImage)
+                    cv2.waitKey(0)
+                    results = HEA(curveData)
+                    results = results.flatten().tolist()
+                    controlPoints += results
 
     return render_template('edit.html', controlPoints=controlPoints)
