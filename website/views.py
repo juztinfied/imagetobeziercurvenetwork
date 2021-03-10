@@ -32,7 +32,7 @@ def sample():
 @views.route('/edit')
 def edit():
     originalImage = cv2.imread('img.jpg')
-    originalImage = image_resize(originalImage, height = 200)
+    originalImage = image_resize(originalImage, height = 400)
     height, width = originalImage.shape[:2]
     heightOffset = height/2 
     widthOffset = width/2 
@@ -56,10 +56,33 @@ def edit():
 
     junctions = list()
     junctions = getJunctions(img)
+    # for junction in junctions:
+    #     for point in junction:
+    #         cv2.circle(originalImage, point, 2, (255,0,0),-1)
+    # cv2.imshow('img', originalImage)
+    # cv2.waitKey(0)
+    # print(junctions)
     endPoints = getEdgeEndPoints(junctions,img)
     matrix = getAdjacencyMatrix(junctions,endPoints,img)
-
+    
+    # for row in matrix:
+    #     for column in row:
+    #         print(column) 
+    #         print('\n')
+    #     print('next row')
     controlPoints = list()
+
+    # print(matrix)
+
+    # for row in matrix:
+    #     for column in row:
+    #         if column != 0:
+    #             copy = originalImage
+                
+    #             for coord in column:
+    #                 cv2.circle(copy, coord, 2, (255,0,0),-1)
+    #             cv2.imshow('im', copy) 
+    #             cv2.waitKey(0)
 
     for rowCount,nodes in enumerate(matrix):
         for columnCount,node in enumerate(nodes):
@@ -67,9 +90,12 @@ def edit():
                 path = node
                 # print(path)
                 curveData = getCurveData2(path)
-                if curveData == None:
+                if len(curveData[0]) < 30:
                     continue
-                
+                # if len(curveData[0]) == 1:
+                    # cv2.circle(originalImage, (curveData[0][0], curveData[1][0]), 4, (255,0,0),-1)
+                    # cv2.imshow('img', originalImage)
+                    # cv2.waitKey(0)
                 results = HEA(curveData)
                 results = results.flatten().tolist()
                 controlPoints += results

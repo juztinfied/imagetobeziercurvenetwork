@@ -71,24 +71,31 @@ def initiatePopulation(curveData):
     maxHeightXIncrease = curveData[2]
     maxHeightYIncrease = curveData[3]
 
+    print('len of curve data ', len(curveData[0]))
+
     initialX = dataX[0]
     initialY = dataY[0]
     terminatingX = dataX[-1]
     terminatingY = dataY[-1]
 
-    frontTangentDX = initialX - dataX[10]
-    frontTangentDY = initialY - dataY[10]
-    backTangentDX = terminatingX - dataX[-10]
-    backTangentDY = terminatingY - dataY[-10]
+    frontTangentDX = initialX - dataX[5]
+    frontTangentDY = initialY - dataY[5]
+    backTangentDX = terminatingX - dataX[-5]
+    backTangentDY = terminatingY - dataY[-5]
 
-    frontM = (dataY[10]-initialY)/(dataX[10]-initialX)
+    frontM = (dataY[5]-initialY)/(dataX[5]-initialX)
     frontC = initialY - frontM*initialX 
 
-    backM = (dataY[-10]-terminatingY)/(dataX[-10]-terminatingX)
+    backM = (dataY[-5]-terminatingY)/(dataX[-5]-terminatingX)
     backC = terminatingY - backM*terminatingX
 
     ratios = [0.75, 1, 1.33, 1.6]
     initialPop = list()
+
+    print(frontM)
+    print(frontC)
+    print(backM)
+    print(backC)
 
 
     for initialRatio in ratios:
@@ -97,11 +104,15 @@ def initiatePopulation(curveData):
                 lineC = initialY+initialRatio*maxHeightYIncrease
                 A = np.array([[-frontM,1],[0,1]])
                 B = np.array([frontC,lineC])
+                print(A)
+                print(B)
                 cp2 = np.linalg.solve(A,B).tolist()
 
                 lineC = terminatingY+terminatingRatio*maxHeightYIncrease
                 A = np.array([[-backM,1],[0,1]])
                 B = np.array([backC,lineC])
+                print(A)
+                print(B)
                 cp3 = np.linalg.solve(A,B).tolist()
 
                 cp1 = [dataX[0], dataY[0]]
@@ -324,8 +335,8 @@ def HEA(curveData):
 
 
         t += 1
-    x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
-    plt.scatter(dataX, dataY,marker="s")
-    plt.scatter(x, y,marker="o")
-    plt.show()
+    # x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
+    # plt.scatter(dataX, dataY,marker="s")
+    # plt.scatter(x, y,marker="o")
+    # plt.show()
     return bestInHistory
