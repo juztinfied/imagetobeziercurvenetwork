@@ -119,55 +119,86 @@ def getCurveData2(path):
     # first get line equation of the line connecting the end points
     startX,startY = path[0]
     endX,endY = path[-1]
-    baseLineM = (endY-startY)/(endX-startX)
-    baseLineC = startY - baseLineM*startX 
-    
-    A = startY - endY # y1 - y2
-    B = endX - startX # x2 - x1
-    C = startX*endY - endX*startY # x1y2 - x2y1
-    
-    # then for each point in the path, calculate its perpendicular distance to that line
-    maxHeightX = maxHeightY = maxHeightIncrease = -1
-    
+
     dataX = list() 
     dataY = list()
-    for x,y in path:
-        dataX.append(x)
-        dataY.append(y) 
-        distance = abs((A*x + B*y + C)) / math.sqrt(A**2 + B**2)
-        if distance >= maxHeightIncrease:
-            maxHeightIncrease = distance
-            maxHeightX = x
-            maxHeightY = y
+    maxHeightX = maxHeightY = maxHeightIncrease = -1
+
+    if startX == endX: # means the baseline is a vertical line going up/down
+        maxHeightY = 0
+        for x,y in path:
+            dataX.append(x)
+            dataY.append(y) 
+            distance = abs(x-startX)
+            if distance >= maxHeightIncrease:
+                maxHeightIncrease = distance
+                maxHeightX = x
+        
+        maxHeightXIncrease = maxHeightX - startX
+        maxHeightYIncrease = 0 
+        return [dataX, dataY, maxHeightXIncrease, maxHeightYIncrease]
     
-    # find the point on the line that is closest to the point of the path
-    
-    # find vector of projection line
-    projX = maxHeightX - startX 
-    projY = maxHeightY - startY 
+    elif startY == endY: # means the base line is a flat horizontal line
+        maxHeightX = 0
+        for x,y in path:
+            dataX.append(x)
+            dataY.append(y) 
+            distance = abs(y-startY)
+            if distance >= maxHeightIncrease:
+                maxHeightIncrease = distance
+                maxHeightY = y
+        
+        maxHeightXIncrease = 0
+        maxHeightYIncrease = maxHeightY - startY
+        return [dataX, dataY, maxHeightXIncrease, maxHeightYIncrease]
+                
+    else:
+        baseLineM = (endY-startY)/(endX-startX)
+        baseLineC = startY - baseLineM*startX 
+        
+        A = startY - endY # y1 - y2
+        B = endX - startX # x2 - x1
+        C = startX*endY - endX*startY # x1y2 - x2y1
+        
+        # then for each point in the path, calculate its perpendicular distance to that line
+        
+        for x,y in path:
+            dataX.append(x)
+            dataY.append(y) 
+            distance = abs((A*x + B*y + C)) / math.sqrt(A**2 + B**2)
+            if distance >= maxHeightIncrease:
+                maxHeightIncrease = distance
+                maxHeightX = x
+                maxHeightY = y
+        
+        # find the point on the line that is closest to the point of the path
+        
+        # find vector of projection line
+        projX = maxHeightX - startX 
+        projY = maxHeightY - startY 
 
-    # find vector of base line
-    baseX = endX - startX 
-    baseY = endY - startY 
+        # find vector of base line
+        baseX = endX - startX 
+        baseY = endY - startY 
 
-    # find length of projection vector 
-    projMag = math.sqrt((maxHeightX - startX)**2 + (maxHeightY - startY)**2)
-    baseMag = math.sqrt((endX - startX)**2 + (endY - startY)**2)
+        # find length of projection vector 
+        projMag = math.sqrt((maxHeightX - startX)**2 + (maxHeightY - startY)**2)
+        baseMag = math.sqrt((endX - startX)**2 + (endY - startY)**2)
 
-    # find dot product 
-    dotProduct = projX*baseX + projY*baseY 
+        # find dot product 
+        dotProduct = projX*baseX + projY*baseY 
 
-    # find length of projection on base line
-    length = dotProduct/projMag 
-    fraction = length/baseMag 
+        # find length of projection on base line
+        length = dotProduct/projMag 
+        fraction = length/baseMag 
 
-    pointX = int(startX + fraction*(endX-startX))
-    pointY = int(startY + fraction*(endY-startY))
+        pointX = int(startX + fraction*(endX-startX))
+        pointY = int(startY + fraction*(endY-startY))
 
-    maxHeightXIncrease = maxHeightX - pointX 
-    maxHeightYIncrease = maxHeightY - pointY 
+        maxHeightXIncrease = maxHeightX - pointX 
+        maxHeightYIncrease = maxHeightY - pointY 
 
-    return [dataX, dataY, maxHeightXIncrease, maxHeightYIncrease]
+        return [dataX, dataY, maxHeightXIncrease, maxHeightYIncrease]
 
 
 def approxCPS(curveData):

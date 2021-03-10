@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 def mutate(x,sigma):
-    print('x is', x)
     r1 = abs(np.random.normal(loc = 1,scale=0.1))
     r2 = abs(np.random.normal(loc = 1,scale=0.1))
     return x*np.array([[1],[r1],[r2],[1]])
@@ -94,23 +93,52 @@ def initiatePopulation(curveData):
 
     for initialRatio in ratios:
         for terminatingRatio in ratios:
-            lineM = ( (initialY+initialRatio*maxHeightYIncrease) - (terminatingY+terminatingRatio*maxHeightYIncrease) )/( (initialX+initialRatio*maxHeightXIncrease) - (terminatingX+terminatingRatio*maxHeightXIncrease) )
-            lineC = (terminatingY+terminatingRatio*maxHeightYIncrease) - lineM*(terminatingX+terminatingRatio*maxHeightXIncrease)
+            if maxHeightXIncrease == 0: # means base line is a flat horizontal line
+                lineC = initialY+initialRatio*maxHeightYIncrease
+                A = np.array([[-frontM,1],[0,1]])
+                B = np.array([frontC,lineC])
+                cp2 = np.linalg.solve(A,B).tolist()
 
-            A = np.array([[-frontM,1],[-lineM,1]])
-            B = np.array([frontC,lineC])
-            cp2 = np.linalg.solve(A,B).tolist()
+                lineC = terminatingY+terminatingRatio*maxHeightYIncrease
+                A = np.array([[-backM,1],[0,1]])
+                B = np.array([backC,lineC])
+                cp3 = np.linalg.solve(A,B).tolist()
 
-            A = np.array([[-backM,1],[-lineM,1]])
-            B = np.array([backC,lineC])
-            cp3 = np.linalg.solve(A,B).tolist()
+                cp1 = [dataX[0], dataY[0]]
+                cp4 = [dataX[-1], dataY[-1]]
 
-            cp1 = [dataX[0], dataY[0]]
-            cp4 = [dataX[-1], dataY[-1]]
+                initialPop.append(np.array([cp1,cp2,cp3,cp4]))
 
+            elif maxHeightYIncrease == 0: # means base line is a straight up vertical line
+                lineX = initialX+initialRatio*maxHeightXIncrease 
+                newX = frontM*lineX + frontC 
+                cp2 = [newX, initialY]
 
+                lineX = terminatingX+terminatingRatio*maxHeightXIncrease 
+                newX = backM*lineX + backC 
+                cp3 = [newX, terminatingY]
 
-            initialPop.append(np.array([cp1,cp2,cp3,cp4]))
+                cp1 = [dataX[0], dataY[0]]
+                cp4 = [dataX[-1], dataY[-1]]
+
+                initialPop.append(np.array([cp1,cp2,cp3,cp4]))
+            
+            else: 
+                lineM = ( (initialY+initialRatio*maxHeightYIncrease) - (terminatingY+terminatingRatio*maxHeightYIncrease) )/( (initialX+initialRatio*maxHeightXIncrease) - (terminatingX+terminatingRatio*maxHeightXIncrease) )
+                lineC = (terminatingY+terminatingRatio*maxHeightYIncrease) - lineM*(terminatingX+terminatingRatio*maxHeightXIncrease)
+
+                A = np.array([[-frontM,1],[-lineM,1]])
+                B = np.array([frontC,lineC])
+                cp2 = np.linalg.solve(A,B).tolist()
+
+                A = np.array([[-backM,1],[-lineM,1]])
+                B = np.array([backC,lineC])
+                cp3 = np.linalg.solve(A,B).tolist()
+
+                cp1 = [dataX[0], dataY[0]]
+                cp4 = [dataX[-1], dataY[-1]]
+
+                initialPop.append(np.array([cp1,cp2,cp3,cp4]))
 
     return initialPop
 
@@ -128,7 +156,7 @@ def HEA(curveData):
     maxHeightYIncrease = curveData[3]
 
     t = 0
-    T = 25
+    T = 10
     w = 0.9
     c1 = c2 = 1.5 
     r = random.uniform(0.9,1.0)
@@ -287,7 +315,7 @@ def HEA(curveData):
             bestfit = max(popFitness)
             print('the best: ', bestfit)
             if fitness(pND,dataX,dataY) > fitness(bestInHistory,dataX,dataY):
-                print('new historical record: ', pND)
+                # print('new historical record: ', pND)
                 bestInHistory = pND
             # x,y = pointGenerator(z, pND[0], pND[1], pND[2], pND[3])
             # plt.scatter(dataX, dataY,marker="s")
@@ -296,5 +324,8 @@ def HEA(curveData):
 
 
         t += 1
-    
+    x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
+    plt.scatter(dataX, dataY,marker="s")
+    plt.scatter(x, y,marker="o")
+    plt.show()
     return bestInHistory

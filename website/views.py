@@ -67,9 +67,11 @@ def edit():
                 path = node
                 # print(path)
                 curveData = getCurveData2(path)
-                if rowCount == 0 and columnCount == 1:
-                    results = HEA(curveData)
-                    results = results.flatten().tolist()
-                    controlPoints += results
+                if curveData == None:
+                    continue
+                
+                results = HEA(curveData)
+                results = results.flatten().tolist()
+                controlPoints += results
 
     return render_template('edit.html', controlPoints=controlPoints)
