@@ -13,6 +13,7 @@ This README would normally document whatever steps are necessary to get your app
 7. Once image file is selected, click Store Image Data
 8. Wait while algorithm fits the curves in the image
 9. Once algorithm is done, the curves will be plotted on desmos graph. Note that you may need to zoom out because the curves are plotted in the negative y-axis, position x-axis area. 
+10. To change number of epoch T, go to ./website/hea/__init__.py line 184. 
 
 
 
