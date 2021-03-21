@@ -1,0 +1,7 @@
+matplotlib==3.0.2
+Flask_SQLAlchemy==2.4.4
+opencv_python==4.0.0.21
+numpy==1.19.4
+Flask==1.1.2
+scikit_image==0.18.1
+skimage==0.0

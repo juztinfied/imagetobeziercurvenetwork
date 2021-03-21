@@ -2,10 +2,10 @@
 
 {% block title %}Home{% endblock %}
 
-{% block instructions%}Drag an image to the expression list to upload it.{% endblock %}
+{% block instructions%}Select a .jpeg image for calculation{% endblock %}
  
 {% block content %}
-  <div id="calculator" style="width: 1050px; height: 600px; margin-bottom: 1em;"></div>
+  <div id="calculator" style="width: 100px; height: 200px; margin-bottom: 1em;"></div>
   
   <form method="POST" enctype="multipart/form-data">
     <input type="hidden" id="imgURL" name="imgURL" value="">

@@ -37,16 +37,15 @@ def selectionOperator(probability):
     print('error in s(x)')
     return 
 
-def fitness(xID, dataX, dataY):
-    cp1 = xID[0]
-    cp2 = xID[1]
-    cp3 = xID[2]
-    cp4 = xID[3]
+def fitness(xI, dataX, dataY):
+    cp1 = xI[0]
+    cp2 = xI[1]
+    cp3 = xI[2]
+    cp4 = xI[3]
     
     return (1/errorFunction(cp1,cp2,cp3,cp4,dataX,dataY))
 
 def errorFunction(cp1,cp2,cp3,cp4,dataX,dataY):
-    # print(cp1, cp2, cp3, cp4)
     if (len(dataX) != len(dataY)):
         print('dataX and dataY not same length')
         return 
@@ -62,7 +61,6 @@ def errorFunction(cp1,cp2,cp3,cp4,dataX,dataY):
         yError = ((y(t)[k] - dataY[k])**2) 
         totalError += math.sqrt(xError + yError)
     
-    # print(totalError)
     return totalError
 
 def initiatePopulation(curveData):
@@ -71,26 +69,32 @@ def initiatePopulation(curveData):
     maxHeightXIncrease = curveData[2]
     maxHeightYIncrease = curveData[3]
 
-    print('len of curve data ', len(curveData[0]))
 
     initialX = dataX[0]
     initialY = dataY[0]
     terminatingX = dataX[-1]
     terminatingY = dataY[-1]
 
-    if dataX[5]-initialX == 0:
-        plt.scatter(dataX, dataY,marker="s")
-        plt.show()
 
     frontTangentDX = initialX - dataX[10]
     frontTangentDY = initialY - dataY[10]
     backTangentDX = terminatingX - dataX[-10]
     backTangentDY = terminatingY - dataY[-10]
 
-    frontM = (dataY[10]-initialY)/(dataX[10]-initialX)
+    frontM = frontC = backM = backC = None
+    
+    if (dataX[10] == initialX):
+        frontM = (dataY[10]-initialY)
+    else:
+        frontM = (dataY[10]-initialY)/(dataX[10]-initialX)
+    
     frontC = initialY - frontM*initialX 
 
-    backM = (dataY[-10]-terminatingY)/(dataX[-10]-terminatingX)
+    if (dataX[-10] == terminatingX):
+        backM = (dataY[-10]-terminatingY)
+    else:
+        backM = (dataY[-10]-terminatingY)/(dataX[-10]-terminatingX)
+
     backC = terminatingY - backM*terminatingX
 
     ratios = [0.75, 1, 1.33, 1.6]
@@ -144,7 +148,8 @@ def initiatePopulation(curveData):
 
                 A = np.array([[-frontM,1],[-lineM,1]])
                 B = np.array([frontC,lineC])
-                if frontM == lineM and frontC == lineC:
+
+                if frontM == lineM:
                     cp2 = cp1 
                 else:
                     cp2 = np.linalg.solve(A,B).tolist()
@@ -152,7 +157,7 @@ def initiatePopulation(curveData):
                 A = np.array([[-backM,1],[-lineM,1]])
                 B = np.array([backC,lineC])
    
-                if backM == lineM and backC == lineC:
+                if backM == lineM:
                     cp3 = cp4 
                 else:
                     cp3 = np.linalg.solve(A,B).tolist()
@@ -174,11 +179,9 @@ def HEA(curveData):
     maxHeightXIncrease = curveData[2]
     maxHeightYIncrease = curveData[3]
 
-    # plt.scatter(dataX, dataY,marker="s")
-    # plt.show()
 
     t = 0
-    T = 10
+    T = 2
     w = 0.9
     c1 = c2 = 1.5 
     r = random.uniform(0.9,1.0)
@@ -193,51 +196,33 @@ def HEA(curveData):
     popX = initiatePopulation(curveData) # this will generate a list, each element is a [cp1,cp2,cp3,cp4]
     
     popV = [None] * len(popX)
-    popFitness = [fitness(xID,dataX,dataY) for xID in popX]
-    pID = popX # list of the personal best position for each member of the population
-    pND = popX[popFitness.index(max(popFitness))] # this should be a [cp1,cp2,cp3,cp4] which has the best fitness on record
-    bestInHistory = pND
-    # print('best position ', pND)
-    # cp1 = pND[0]
-    # cp2 = pND[1]
-    # cp3 = pND[2]
-    # cp4 = pND[3]
-    
-    # plt.scatter(dataX, dataY,marker="s")
-    # x,y = pointGenerator(z,cp1,cp2,cp3,cp4)
-    # plt.scatter(x,y,marker="o")
-    # plt.show()
+    popFitness = [fitness(xI,dataX,dataY) for xI in popX]
+    pI = popX # list of the personal best position for each member of the population
+    pG = popX[popFitness.index(max(popFitness))] # this should be a [cp1,cp2,cp3,cp4] which has the best fitness on record
+    bestInHistory = pG
+
 
     probability = [None] * len(popX)
     
     while t < T:
         # calculate V according to (1) and (4)
-        for index,xID in enumerate(popX): # for each x position of each member of the population
+        for index,xI in enumerate(popX): # for each x position of each member of the population
             if popV[index] is None:
-                popV[index] = c2*R*(pND-xID)
+                popV[index] = c2*R*(pG-xI)
             else:
-                popV[index] = w*popV[index] + c1*r*(pID[index]-xID) + c2*R*(pND-xID)
+                popV[index] = w*popV[index] + c1*r*(pI[index]-xI) + c2*R*(pG-xI)
 
         # calculate X according to (2) and (5)
-        for index,xID in enumerate(popX):
-            # print('calculating new XID')
-            newXID = xID + popV[index]
+        for index,xI in enumerate(popX):
+            newXI = xI + popV[index]
 
-            # oldX,oldY = pointGenerator(z, xID[0], xID[1], xID[2], xID[3])
-            # newX,newY = pointGenerator(z, newXID[0], newXID[1], newXID[2], newXID[3])
-
-            # plt.scatter(dataX, dataY,color="b")
-            # plt.scatter(oldX, oldY,color="r")
-            # plt.scatter(newX, newY, color="g")
-            # plt.show()
-
-            if fitness(newXID,dataX,dataY) > fitness(xID,dataX,dataY): # if the new xID has better fitness, change the member's personal best position
-                pID[index] = newXID
+            if fitness(newXI,dataX,dataY) > fitness(xI,dataX,dataY): # if the new xI has better fitness, change the member's personal best position
+                pI[index] = newXI
             
-            popX[index] = newXID 
+            popX[index] = newXI 
                 
         # calculate F(X) according to (6) in P(t+1)
-        popFitness = [fitness(xID,dataX,dataY) for xID in popX]
+        popFitness = [fitness(xI,dataX,dataY) for xI in popX]
         
         # calculate p = (p1,p2,...,pN) according to (7)
         for index,fitnessI in enumerate(popFitness):
@@ -246,7 +231,7 @@ def HEA(curveData):
         
         newPopX = list() # prepare next generation of population
         newPopV = list()
-        newPID = list()
+        newPI = list()
 
         for k in range(0,len(probability),2):
             indexA = selectionOperator(probability)
@@ -255,15 +240,6 @@ def HEA(curveData):
             xA = popX[indexA]
             xB = popX[indexB]
 
-            # print('xA and xB:\n')
-            
-            # x1,y1 = pointGenerator(z, xA[0], xA[1], xA[2], xA[3])
-            # x2,y2 = pointGenerator(z, xB[0], xB[1], xB[2], xB[3])
-            # plt.scatter(dataX, dataY,color="b")
-            # plt.scatter(x1, y1,color="r")
-            # plt.scatter(x2, y2,color="g")
-            # plt.show()
-
             r = random.uniform(0,1.0)
             
             if r <= pR:
@@ -271,51 +247,34 @@ def HEA(curveData):
                 newPopX.append(popX[indexB])
                 newPopV.append(popV[indexA])
                 newPopV.append(popV[indexB])
-                newPID.append(pID[indexA])
-                newPID.append(pID[indexB])
+                newPI.append(pI[indexA])
+                newPI.append(pI[indexB])
             
             elif r <= (pR + pC):
                 childA,childB = crossOver(xA,xB)
-                # print('childA and childB\n ')
-                
-                # x1,y1 = pointGenerator(z, childA[0], childA[1], childA[2], childA[3])
-                # x2,y2 = pointGenerator(z, childB[0], childB[1], childB[2], childB[3])
-                # plt.scatter(dataX, dataY,color="b")
-                # plt.scatter(x1, y1,color="r")
-                # plt.scatter(x2, y2,color="g")
-                # plt.show()
                 
                 newPopX.append(childA)
                 newPopX.append(childB)
                 newPopV.append(None)
                 newPopV.append(None)
-                newPID.append(childA)
-                newPID.append(childB)
+                newPI.append(childA)
+                newPI.append(childB)
             
             else:
                 mutatedA = mutate(xA,sigma)
                 mutatedB = mutate(xB,sigma)
 
-                # print('mutated A and B: \n')
-                
-                # x1,y1 = pointGenerator(z, mutatedA[0], mutatedA[1], mutatedA[2], mutatedA[3])
-                # x2,y2 = pointGenerator(z, mutatedB[0], mutatedB[1], mutatedB[2], mutatedB[3])
-                # plt.scatter(dataX, dataY,color="b")
-                # plt.scatter(x1, y1,color="r")
-                # plt.scatter(x2, y2,color="g")
-                # plt.show()
-
                 newPopX.append(mutatedA)
                 newPopX.append(mutatedB)
                 newPopV.append(None)
                 newPopV.append(None)
-                newPID.append(mutatedA)
-                newPID.append(mutatedB)
+                newPI.append(mutatedA)
+                newPI.append(mutatedB)
         
         
         popX = newPopX
         popV = newPopV
-        pID = newPID
+        pI = newPI
         
         popFitness = [fitness(member,dataX,dataY) for member in popX]
         probability = [None] * len(popFitness)
@@ -323,32 +282,22 @@ def HEA(curveData):
         for index,fitnessI in enumerate(popFitness):
             probability[index] = fitnessI/sum(popFitness)
 
-        newPND = popX[popFitness.index(max(popFitness))] 
+        newPG = popX[popFitness.index(max(popFitness))] 
         
-        if fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) > 0 and fitness(newPND,dataX,dataY) - fitness(pND,dataX,dataY) < 0.000001 and fitness(newPND,dataX,dataY) > 0.0015 and fitness(newPND, dataX, dataY) > fitness(bestInHistory, dataX, dataY):
+        if fitness(newPG,dataX,dataY) - fitness(pG,dataX,dataY) > 0 and fitness(newPG,dataX,dataY) - fitness(pG,dataX,dataY) < 0.000001 and fitness(newPG,dataX,dataY) > 0.0015 and fitness(newPG, dataX, dataY) > fitness(bestInHistory, dataX, dataY):
             print('converging, hence early termination')
-            # x,y = pointGenerator(z, newPND[0], pND[1], pND[2], pND[3])
-            # plt.scatter(dataX, dataY,marker="s")
-            # plt.scatter(x, y,marker="o")
-            # plt.show()
-            return newPND
+            return newPG
+
         else:
-            pND = popX[popFitness.index(max(popFitness))] 
+            pG = popX[popFitness.index(max(popFitness))] 
             bestfit = max(popFitness)
-            # print('the best: ', bestfit)
-            if fitness(pND,dataX,dataY) > fitness(bestInHistory,dataX,dataY):
-                # print('new historical record: ', pND)
-                bestInHistory = pND
-            # x,y = pointGenerator(z, pND[0], pND[1], pND[2], pND[3])
-            # plt.scatter(dataX, dataY,marker="s")
-            # plt.scatter(x, y,marker="o")
-            # plt.show()
+
+            if fitness(pG,dataX,dataY) > fitness(bestInHistory,dataX,dataY):
+                bestInHistory = pG
+
 
 
         t += 1
-    # x,y = pointGenerator(z, bestInHistory[0], bestInHistory[1], bestInHistory[2], bestInHistory[3])
-    # plt.scatter(dataX, dataY,marker="s")
-    # plt.scatter(x, y,marker="o")
-    # plt.show()
+
     print('the best in history for this curve: ', fitness(bestInHistory,dataX,dataY))
     return bestInHistory

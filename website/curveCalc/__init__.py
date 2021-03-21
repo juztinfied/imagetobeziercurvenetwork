@@ -1,6 +1,4 @@
-from skimage import data
 import matplotlib.pyplot as plt
-from skimage import filters
 import numpy as np
 import cv2
 from skimage.morphology import skeletonize, thin
@@ -38,13 +36,13 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     # return the resized image
     return resized
 
-def isEightConnected(x1,y1,x2,y2): # seems to work so far
+def isEightConnected(x1,y1,x2,y2): 
     if abs(x1-x2) == 0 or abs(x1-x2) == 1:
         if abs(y1-y2) == 0 or abs(y1-y2) == 1:
             return True 
     return False 
 
-def addToJunctions(junctions,x,y): # seems to work so far
+def addToJunctions(junctions,x,y): 
     for junction in junctions:
         for pixel in junction:
             pixelX,pixelY = pixel 
@@ -55,7 +53,7 @@ def addToJunctions(junctions,x,y): # seems to work so far
     junctions.append([(x,y)])
     return junctions
 
-def getJunctions(neighbourMatrix): # seems to work so far 
+def getJunctions(neighbourMatrix): 
     junctions = list()
     height, width = neighbourMatrix.shape
     for y in range(0,height):
@@ -65,7 +63,7 @@ def getJunctions(neighbourMatrix): # seems to work so far
     
     return junctions 
 
-def getEdgeEndPoints(junctions,neighbourMatrix): # seems to work 
+def getEdgeEndPoints(junctions,neighbourMatrix):  
     endPoints = list()
     height, width = neighbourMatrix.shape
     for y in range(0,height):
